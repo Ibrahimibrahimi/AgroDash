@@ -1,85 +1,34 @@
-frontend/your web app
-│
-├── src/all your actual code lives here
-│ │
-│ ├── views/pagesone file = one screen (Vue calls them views)
-│ │ ├── DashboardView.vuemain overview with charts & KPIs
-│ │ ├── MapView.vuefull-screen map with humidity/soil layers
-│ │ └── AlertsView.vuelist of irrigation or disease alerts
-│ │
-│ ├── components/componentsreusable UI pieces
-│ │ ├── Sidebar.vueleft nav menu, links between views
-│ │ ├── Topbar.vueheader with farm name, date, user
-│ │ │
-│ │ ├── map/
-│ │ │ ├── MapContainer.vuewraps Leaflet map, sets center & zoom
-│ │ │ ├── HumidityLayer.vuecolored overlay showing humidity %
-│ │ │ └── FieldMarker.vuepin/polygon for each field
-│ │ │
-│ │ ├── charts/
-│ │ │ ├── HumidityChart.vueline chart, humidity over time
-│ │ │ ├── TemperatureChart.vuetemp trends per field
-│ │ │ └── SoilChart.vuesoil moisture bar chart
-│ │ │
-│ │ └── decisions/
-│ │ ├── RecommendCard.vueshows "irrigate field 3" type cards
-│ │ └── AlertBanner.vuered/yellow banner for urgent alerts
-│ │
-│ ├── stores/statePinia stores — Vue's way to manage shared data
-│ │ ├── sensors.jsholds sensor readings, fetches from backend
-│ │ ├── map.jsholds field boundaries, active layers
-│ │ └── decisions.jsholds recommendations & alerts
-│ │
-│ ├── composables/Vue's equivalent of React hooks
-│ │ ├── useHumidity.jsfetches & refreshes humidity data
-│ │ └── useDecisions.jsfetches ML recommendations
-│ │
-│ ├── api/all fetch calls to your Django backend
-│ │ ├── sensors.jsgetSensorData(), getHumidity(fieldId)
-│ │ ├── maps.jsgetFieldBoundaries(), getLayerData()
-│ │ └── decisions.jsgetRecommendations(), getAlerts()
-│ │
-│ ├── router/index.jsmaps URLs to views — vue-router
-│ ├── App.vueroot component, contains Sidebar + router-view
-│ ├── main.jsentry point — mounts App, registers Pinia & router
-│ └── style.cssglobal styles
-│
-├── index.htmlsingle HTML file — Vite injects your app here
-├── vite.config.jsproxy config — forwards /api calls to Django :8000
-├── package.jsondependencies — Vue, Pinia, vue-router, Leaflet, etc.
-└── .envVITE_API_URL=http://localhost:8000
+frontend/react:5173
+├── src/
+│ ├── pages/one file = one screen
+│ │ ├── Dashboard.jsxcharts, KPIs, overview
+│ │ ├── MapPage.jsxhumidity & field map
+│ │ └── Decisions.jsxmodel predictions & alerts
+│ ├── components/reusable UI pieces
+│ │ ├── Sidebar.jsx
+│ │ ├── Map.jsxLeaflet map wrapper
+│ │ └── PredictionCard.jsxdisplays model output
+│ ├── api/
+│ │ └── flask.jsall fetch() calls to Flask
+│ ├── App.jsxroot — sets up routing
+│ └── main.jsxentry point (don't touch)
+├── index.html
+├── vite.config.jsproxy /api → localhost:8000
+└── package.json
 
 
-├── config/project-level Django settings
-│ ├── settings.pydatabase, installed apps, CORS, secret key
-│ ├── urls.pyroot URL router — wires all app URLs together
-│ └── wsgi.pyentry point when deploying (don't touch locally)
-│
-├── apps/each feature is its own Django app
-│ │
-│ ├── sensors/handles all sensor data
-│ │ ├── models.pySensorReading(field, humidity, temp, timestamp)
-│ │ ├── serializers.pyconverts model → JSON for the API
-│ │ ├── views.pyGET /api/sensors/, GET /api/sensors/{id}/
-│ │ └── urls.pyURL patterns for this app
-│ │
-│ ├── maps/handles field boundaries & map layers
-│ │ ├── models.pyField(name, boundary_geojson, crop_type)
-│ │ ├── serializers.py
-│ │ ├── views.pyGET /api/fields/, GET /api/humidity-layer/
-│ │ └── urls.py
-│ │
-│ └── decisions/handles ML recommendations & alerts
-│ ├── models.pyRecommendation(field, action, confidence, created_at)
-│ ├── serializers.py
-│ ├── views.pyGET /api/recommendations/, GET /api/alerts/
-│ ├── urls.py
-│ └── engine.pyimports predict.py from ml/ — runs inference here
-│
-├── manage.pyDjango CLI — run migrations, start server, etc.
-└── requirements.txtdjango, djangorestframework, django-cors-headers
-ML — DECISION MODELS
-ml/models
-├── predict.pyimported by decisions/engine.py — main logic here
-├── train.pyrun manually to retrain models
-└── saved_models/your .pkl files go here after training
+backend/flask:8000
+├── app.pyFlask app, routes, CORS config
+├── routes/
+│ ├── sensors.pyGET /api/sensors
+│ ├── map.pyGET /api/fields, /api/humidity
+│ └── predict.pyPOST /api/predict → calls model
+└── requirements.txtflask, flask-cors, torch
+
+
+model/pytorch
+├── model.pyPyTorch model definition
+├── train.pyrun once to train & save
+├── predict.pyloads model, runs inference
+└── saved/
+└── agri_model.pttrained weights file
