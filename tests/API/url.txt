@@ -1,0 +1,18 @@
+URL : https://api.open-meteo.com/v1/forecast?
+Parameters : 
+    - temperature_2m (air temperature at 2 meters)
+    - relative_humidity_2m
+    - rain (amount of rain)
+    - showers
+    - weather_code (weather condition codes)
+    - uv_index
+    - pressure_msl (mean sea level pressure)
+    - surface_pressure
+    - evapotranspiration
+    - wind_speed_10m
+    - temperature_80m (temperature at 80 meters)
+    - precipitation
+    - precipitation_probability
+    - dew_point_2m
+    - is_day (day/night indicator)
+    - wind_direction_180m

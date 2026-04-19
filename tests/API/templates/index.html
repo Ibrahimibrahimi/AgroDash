@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Weather Dashboard</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f0f0f0;
+}
+
+h1 {
+    text-align: center;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    padding: 10px 20px;
+    font-size: 16px;
+}
+
+.charts {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+canvas {
+    background: #fff;
+    padding: 10px;
+    border-radius: 8px;
+    max-width: 800px;
+    width: 100%;
+}
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Weather Dashboard</h1>
+    <button onclick="fetchData()">Refresh Data</button>
+    <div class="charts">
+        <canvas id="tempChart"></canvas>
+        <canvas id="precipChart"></canvas>
+        <canvas id="windChart"></canvas>
+    </div>
+
+    <script>
+        let tempChart, precipChart, windChart;
+
+        async function fetchData() {
+            const response = await fetch('/api/weather');
+            const data = await response.json();
+
+            const labels = data.times;
+
+            // Destroy old charts if they exist
+            if (tempChart) tempChart.destroy();
+            if (precipChart) precipChart.destroy();
+            if (windChart) windChart.destroy();
+
+            // Temperature Chart
+            const ctxTemp = document.getElementById('tempChart').getContext('2d');
+            tempChart = new Chart(ctxTemp, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: data.temperature,
+                        borderColor: 'red',
+                        fill: false
+                    }]
+                },
+                options: { responsive: true, scales: { x: { display: false } } }
+            });
+
+            // Precipitation Chart
+            const ctxPrecip = document.getElementById('precipChart').getContext('2d');
+            precipChart = new Chart(ctxPrecip, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Precipitation (mm)',
+                        data: data.precipitation,
+                        backgroundColor: 'blue'
+                    }]
+                },
+                options: { responsive: true, scales: { x: { display: false } } }
+            });
+
+            // Wind Speed Chart
+            const ctxWind = document.getElementById('windChart').getContext('2d');
+            windChart = new Chart(ctxWind, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Wind Speed (km/h)',
+                        data: data.wind_speed,
+                        borderColor: 'green',
+                        fill: false
+                    }]
+                },
+                options: { responsive: true, scales: { x: { display: false } } }
+            });
+        }
+
+        // Fetch data on page load
+        fetchData();
+    </script>
+</body>
+</html>
